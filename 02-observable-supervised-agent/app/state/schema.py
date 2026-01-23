@@ -17,7 +17,7 @@ class AgentState:
     # ─────────────────────────────────────────────
     task: str
     execution_id: str = field(default_factory=lambda: str(uuid4()))
-
+    decision: str | None = None
     # ─────────────────────────────────────────────
     # Execution progress
     # ─────────────────────────────────────────────

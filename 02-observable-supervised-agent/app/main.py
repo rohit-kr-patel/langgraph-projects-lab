@@ -4,22 +4,36 @@ from agent.supervisor import decide_next_action
 from agent.router import route
 from observability.logger import log_event
 from observability import metrics
-
+from tools.text_analyzer import text_analyzer
 
 def worker_node(state: AgentState) -> AgentState:
-    # Dummy worker logic
-    log_event("worker_started", state)
+   # Retry bookkeeping (already added earlier)
     if state.decision == "RETRY":
         state.increment_retry()
         metrics.increment_retry()
 
-        log_event("worker_started", state)
-    if state.retry_count == 0:
-        state.worker_output = "partial result"
-        state.confidence_score = 0.4
-    else:
-        state.worker_output = "final result"
-        state.confidence_score = 0.9
+    log_event("worker_started", state)
+
+    try:
+        result = text_analyzer(state.task)
+
+        # Save factual output
+        state.worker_output = result
+
+        # Derive confidence mechanically
+        wc = result["word_count"]
+        if wc == 0:
+            state.confidence_score = 0.0
+        elif wc < 5:
+            state.confidence_score = 0.4
+        else:
+            state.confidence_score = 0.9
+
+    except Exception as e:
+        # Tool failure path
+        state.worker_output = None
+        state.confidence_score = 0.0
+        state.add_error(str(e))
 
     log_event("worker_completed", state)
     return state
@@ -27,8 +41,16 @@ def worker_node(state: AgentState) -> AgentState:
 def supervisor_node(state: AgentState) -> AgentState:
     decision = decide_next_action(state)
     state.decision = decision
+
+    if decision == "SUCCESS":
+        state.status = "success"
+
+    elif decision == "FAILURE":
+        state.status = "failed"
+
     log_event("supervisor_decision_made", state, {"decision": decision})
     return state
+
 
 
 
@@ -63,6 +85,6 @@ app = graph.compile()
 
 
 if __name__ == "__main__":
-    state = AgentState(task="demo task")
+    state = AgentState(task=123)
     final_state = app.invoke(state)
     print("Final state:", final_state)

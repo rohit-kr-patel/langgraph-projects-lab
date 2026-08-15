@@ -1,4 +1,7 @@
 
+from enum import Enum
+from human import human_review_node
+
 from state import LoanApprovalState
 from state import WorkflowState
 
@@ -54,5 +57,17 @@ def supervisor_node(state:LoanApprovalState)->LoanApprovalState:
     return state
 
 
-def resume_after_human_node(state):
-    pass
+def resume_after_human_node(
+    state: LoanApprovalState,
+) -> LoanApprovalState:
+
+    state.retry_count += 1
+
+    print(
+        f"Retry Attempt: "
+        f"{state.retry_count}/{state.max_retries}"
+    )
+
+    # Apply human corrections here
+    human_review_node(state)
+    return state

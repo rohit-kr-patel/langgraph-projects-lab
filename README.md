@@ -1,127 +1,299 @@
 # LangGraph Project Lab
 
-A **project-based learning repository** for building and evolving **AI agents using LangGraph**.
+A **project-based learning repository** for building, experimenting with, and evolving **AI agents using LangGraph**.
 
-This repository follows a **step-by-step project approach**, where each numbered folder represents a clear learning milestone in agent design, control flow, and system thinking.
+This repository follows a **step-by-step learning journey**, where each numbered folder represents a distinct milestone in understanding agent architectures, state management, routing, supervision, observability, and human-in-the-loop workflows.
 
-This is **not a tutorial repo**.  
-This is **learning by building**.
+This is **not a tutorial repository**.
+This is **learning by building real systems**.
 
 ---
 
-## 🎯 Purpose
+# 🎯 Purpose
 
 The goal of this repository is to:
 
-- Learn **LangGraph by building real projects**
-- Understand agent **state, routing, looping, and termination**
-- Practice designing **safe and reliable agent workflows**
-- Move from simple agents to **production-style architectures**
-- Develop strong fundamentals for **agent-based systems**
+* Learn **LangGraph through hands-on projects**
+* Understand how agent workflows are modeled as **state machines**
+* Build confidence with **StateGraph design patterns**
+* Explore routing, supervision, retries, and human intervention
+* Practice designing **safe, observable, and controllable AI systems**
+* Progress from simple agents to production-inspired architectures
 
 ---
 
-## 🧠 Learning Philosophy
+# 🧠 Learning Philosophy
 
-- One repository for **structured learning**
-- Projects are **incremental and ordered**
-- Each project focuses on **specific LangGraph concepts**
-- Complexity increases gradually
-- **Clarity > cleverness**
+This repository follows a few core principles:
 
----
+* Learn by building
+* One project, one concept
+* Explicit control flow over hidden abstractions
+* Small projects before large systems
+* Incremental complexity
+* Reliability before optimization
 
-## 📂 Folder Convention
-
-- **Numbered folders (`01`, `02`, …)** show learning progression
-- Each folder represents a **standalone LangGraph project**
-- Earlier projects remain **unchanged once completed**
-- New concepts are introduced **only in newer projects**
-
-This enforces architectural discipline and prevents regressions.
+Each project focuses on a specific architectural concept and introduces only a small number of new ideas.
 
 ---
 
-## 🧩 Projects
+# 📂 Repository Structure
 
-### `01_tool_calling_agent`
-**Goal:** Build an agent that can think and act using tools.
+```text
+langgraph-projects-lab/
+│
+├── 01-tool-calling-agent/
+├── 02-observable-supervised-agent/
+├── 03-human-in-the-loop-agent/
+│
+└── README.md
+```
 
-**Focus:**
-- LLM-driven tool selection
-- Deterministic tool execution
-- Agent → Tool → Agent looping
-- State updates after tool calls
-- Guarding against infinite loops
+### Folder Convention
 
-This project introduces **core LangGraph behavior** and represents the transition from passive agents to **action-oriented agents**.
+* Numbered folders (`01`, `02`, `03`, ...)
+* Each folder is a standalone project
+* Projects remain unchanged after completion
+* New concepts are introduced only in newer projects
+* Earlier projects serve as learning references
 
----
-
-### `02_observable_supervised_agent`
-**Goal:** Build a supervised, observable agent with explicit control flow.
-
-**Focus:**
-- Supervisor–Worker agent pattern
-- Confidence-based routing and termination
-- Observability-first design (logs, metrics, events)
-- Explicit failure handling and recovery
-- Bounded retries and safe termination
-
-This project treats the agent as a **system**, not a script, and introduces **production-style control and reliability concerns**.
+This approach preserves architectural history and learning progression.
 
 ---
 
-## 🧩 Project Rules
-
-For every project in this repository:
-
-- Graph logic must be **explicit**
-- Tools must be **deterministic**
-- Routing decisions must be **explainable**
-- No hidden magic or shortcuts
-- Each project must stand on its own
+# 🧩 Projects
 
 ---
 
-## 🚀 When to Create a New Repository
+## 01 - Tool Calling Agent
 
-A project is moved into its **own repository** only when:
+### Goal
 
-- It solves a single, well-defined problem
-- It can be used independently
-- It is stable and showcase-ready
-- It no longer benefits from the lab structure
+Build an agent capable of reasoning and interacting with external tools.
 
-Until then, everything lives here.
+### Concepts Covered
 
----
+* LangGraph fundamentals
+* StateGraph basics
+* Tool integration
+* Agent → Tool → Agent loops
+* Deterministic execution
+* State updates
+* Loop termination
 
-## 🛠 Tech Stack
+### Key Learning
 
-- Python
-- LangGraph
-- LangChain
-- Async-first design
-- State-driven agent architecture
-
----
-
-## 📈 Status
-
-🚧 Active learning  
-📚 Focused on fundamentals  
-🧪 Iterative and experimental  
+This project introduces the transition from passive LLM interactions to action-oriented agents that can use tools to accomplish tasks.
 
 ---
 
-## 🧠 Final Note
+## 02 - Observable & Supervised Agent
 
-This repository reflects **how I approach agent systems**:
+### Goal
+
+Build a supervised agent with explicit control flow and observability.
+
+### Concepts Covered
+
+* Supervisor–Worker architecture
+* Confidence-based routing
+* Agent observability
+* Event tracking
+* Retry mechanisms
+* Failure handling
+* Safe workflow termination
+
+### Key Learning
+
+This project treats agents as systems rather than scripts and introduces production-style concerns such as monitoring, control, and reliability.
+
+---
+
+## 03 - Human-in-the-Loop Agent
+
+### Goal
+
+Build a workflow that combines automation with human oversight using LangGraph's Human-in-the-Loop capabilities.
+
+### Concepts Covered
+
+* Human-in-the-Loop (HITL)
+* LangGraph `interrupt()`
+* Workflow pause and resume
+* Checkpointing with MemorySaver
+* Human approval workflows
+* Conditional routing
+* Shared workflow state
+* Audit history
+
+### Project Scenario
+
+A loan approval workflow where:
+
+1. Automation evaluates loan risk.
+2. Supervisor evaluates confidence.
+3. High-confidence decisions are automatically approved.
+4. Low-confidence decisions require human review.
+5. Workflow pauses using `interrupt()`.
+6. Human provides a decision.
+7. Workflow resumes from the exact interruption point.
+
+### Workflow Architecture
+
+```text
+START
+  │
+  ▼
+start_node
+  │
+  ▼
+automation_node
+  │
+  ▼
+supervisor_node
+  │
+  ├──────── SUCCESS ───────► END
+  │
+  └──────── HUMAN REVIEW
+                │
+                ▼
+        human_review_node
+                │
+          interrupt()
+                │
+         Workflow Paused
+                │
+         Human Decision
+                │
+                ▼
+    resume_after_human_node
+                │
+                ▼
+        automation_node
+```
+
+### Key Learning
+
+This project introduces one of LangGraph's most powerful features: the ability to pause execution, wait for human intervention, and resume execution later while preserving workflow state.
+
+---
+
+# 🧩 Project Rules
+
+Every project in this repository follows the same architectural principles:
+
+* Explicit graph design
+* Deterministic execution
+* Explainable routing decisions
+* State-driven workflows
+* Clear failure handling
+* No hidden control flow
+* Minimal magic
+* Reproducible behavior
+
+---
+
+# 🏗 Architectural Themes
+
+As projects progress, the repository explores:
+
+### State Management
+
+* Shared workflow state
+* State transitions
+* State validation
+* State persistence
+
+### Routing
+
+* Conditional edges
+* Dynamic decision making
+* Confidence-based control flow
+
+### Reliability
+
+* Failure handling
+* Retry strategies
+* Safe termination
+
+### Observability
+
+* Audit history
+* Logging
+* Execution tracking
+* Decision transparency
+
+### Human Oversight
+
+* Approval workflows
+* Human intervention
+* Workflow interruption
+* Workflow resumption
+
+---
+
+# 🚀 When to Create a Separate Repository
+
+A project graduates from this lab into its own repository when:
+
+* It solves a focused problem
+* It has a stable architecture
+* It is production-ready or showcase-ready
+* It can evolve independently
+* It no longer benefits from the learning-lab structure
+
+Until then, all experiments remain here.
+
+---
+
+# 🛠 Tech Stack
+
+* Python
+* LangGraph
+* LangChain
+* StateGraph
+* Dataclasses
+* Async-first architecture
+* Human-in-the-Loop workflows
+
+---
+
+# 📚 Current Learning Roadmap
+
+```text
+01 → Tool Calling Agent
+        ↓
+02 → Observable & Supervised Agent
+        ↓
+03 → Human-in-the-Loop Agent
+        ↓
+04 → Multi-Agent Systems (Planned)
+        ↓
+05 → Production Agent Architectures (Planned)
+```
+
+---
+
+# 📈 Status
+
+* 🚧 Active Learning Repository
+* 🧪 Experimental Projects
+* 📚 Focused on Agent Fundamentals
+* 🔄 Continuously Evolving
+
+---
+
+# 🧠 Final Note
+
+This repository reflects a systems-oriented approach to building AI agents.
 
 Agents are treated as:
-- **Systems**, not scripts
-- **State machines**, not chatbots
-- **Products in evolution**, not demos
 
-Each project is a deliberate step toward building **trustworthy, controllable AI agents**.
+* Systems, not scripts
+* State machines, not chatbots
+* Workflows, not prompts
+* Products in evolution, not demos
+
+The objective is not just to learn LangGraph APIs, but to understand how trustworthy, observable, controllable, and production-ready agent systems are designed.
+
+Every project is a deliberate step toward building reliable AI applications.

@@ -1,7 +1,12 @@
 from llm import invoke_llm
+from state import ResearchState
+from nodes import research_agent
 
-response = invoke_llm(
-    "What is LangGraph?"
+
+state = ResearchState(
+    query="What is LangGraph?"
 )
 
-print(response)
+result = research_agent(state)
+
+print(result.research_notes)
